@@ -20,10 +20,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,9 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mSearchResultsTextView;
 
-    // TODO (12) Create a variable to store a reference to the error message TextView
+    // Completed (12) Create a variable to store a reference to the error message TextView
+    TextView mErrorMessageTextView;
 
-    // TODO (24) Create a ProgressBar variable to store a reference to the ProgressBar
+    // Completed (24) Create a ProgressBar variable to store a reference to the ProgressBar
+    ProgressBar mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +56,11 @@ public class MainActivity extends AppCompatActivity {
         mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
         mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
 
-        // TODO (13) Get a reference to the error TextView using findViewById
+        // Completed (13) Get a reference to the error TextView using findViewById
+        mErrorMessageTextView=(TextView) findViewById(R.id.tv_error_message_display);
 
-        // TODO (25) Get a reference to the ProgressBar using findViewById
+        // Completed (25) Get a reference to the ProgressBar using findViewById
+        mProgressbar=(ProgressBar) findViewById(R.id.pb_loading_indicator);
     }
 
     /**
@@ -68,13 +76,26 @@ public class MainActivity extends AppCompatActivity {
         new GithubQueryTask().execute(githubSearchUrl);
     }
 
-    // TODO (14) Create a method called showJsonDataView to show the data and hide the error
+    // Completed (14) Create a method called showJsonDataView to show the data and hide the error
+    private void showJsonDataView(){
+        mErrorMessageTextView.setVisibility(View.INVISIBLE);
+        mSearchResultsTextView.setVisibility(View.VISIBLE);
+    }
 
-    // TODO (15) Create a method called showErrorMessage to show the error and hide the data
+    // Completed (15) Create a method called showErrorMessage to show the error and hide the data
+    private void showErrorMessage(){
+        mErrorMessageTextView.setVisibility(View.VISIBLE);
+        mSearchResultsTextView.setVisibility(View.INVISIBLE);
+    }
 
     public class GithubQueryTask extends AsyncTask<URL, Void, String> {
 
-        // TODO (26) Override onPreExecute to set the loading indicator to visible
+        // Completed (26) Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressbar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String doInBackground(URL... params) {
@@ -90,12 +111,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String githubSearchResults) {
-            // TODO (27) As soon as the loading is complete, hide the loading indicator
+            // Completed (27) As soon as the loading is complete, hide the loading indicator
+            mProgressbar.setVisibility(View.INVISIBLE);
             if (githubSearchResults != null && !githubSearchResults.equals("")) {
-                // TODO (17) Call showJsonDataView if we have valid, non-null results
+                // Completed (17) Call showJsonDataView if we have valid, non-null results
                 mSearchResultsTextView.setText(githubSearchResults);
+                showJsonDataView();
+            }else {
+                // Completed (16) Call showErrorMessage if the result is null in onPostExecute
+                showErrorMessage();
             }
-            // TODO (16) Call showErrorMessage if the result is null in onPostExecute
         }
     }
 
